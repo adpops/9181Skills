@@ -1,6 +1,16 @@
 #include <math.h>
 #include "main.h"
 
+pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+
+pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+
 /**
 * Runs the user autonomous code. This function will be started in its own task
 * with the default priority and stack size whenever the robot is enabled via
@@ -15,10 +25,6 @@
 
 static void driveMotors(int powerLeft, int powerRight)
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
  leftFDrive_mtr.move(powerLeft);
  leftBDrive_mtr.move(powerLeft);
@@ -28,11 +34,6 @@ static void driveMotors(int powerLeft, int powerRight)
 
 static void resetPos()
 {
-  pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-  pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-  pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-  pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-
   leftBDrive_mtr.tare_position();
   rightBDrive_mtr.tare_position();
   rightFDrive_mtr.tare_position();
@@ -41,10 +42,6 @@ static void resetPos()
 
 static void resetSensor(int target)
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
 
  leftFDrive_mtr.set_zero_position(target);
@@ -55,10 +52,7 @@ static void resetSensor(int target)
 
 static void driveBrakeHold()
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+
 
  leftFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
  leftBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -68,10 +62,7 @@ static void driveBrakeHold()
 
 static void resetBrake()
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+
 
  leftFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
  leftBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -81,12 +72,8 @@ static void resetBrake()
 
 static void movePID(int power)
 {
-  pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-  pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-  pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-  pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
-  double kp = 0.6485;
+  double kp = 1; //0.6485
 
   int main = 0;
   int secondary = 0;
@@ -137,10 +124,6 @@ static void movePID(int power)
 
 static void driveTurn(int degrees, int power)
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
  resetPos();
  degrees*=3.107;
@@ -160,22 +143,12 @@ static void driveTurn(int degrees, int power)
 
 static void flyCoast()
 {
- pros::Motor flyWheel_mtr(10, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
 
  flyWheel_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void moveDrive(double targetDistance, int maxPower, int flyWheelP, int indexerP, int intakeP)
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor flyWheel_mtr(10, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-
- pros::Motor ballIntake_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor indexer(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-
  int currentDistance = 0;
  double error = 20;
 
@@ -200,7 +173,8 @@ while(error != 0)
 
    flyWheel_mtr.move(flyWheelP);
 
-   movePID(maxPower);
+   driveMotors(maxPower, maxPower);
+   //movePID(maxPower);
 
    if(error < 15 && error > -15)
    {
@@ -217,10 +191,8 @@ while(error != 0)
 
 void miscell(int powerIntake, int powerIndexer, int time)
 {
- pros::Motor intake(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor indexer(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
- intake.move(powerIntake);
+ ballIntake_mtr.move(powerIntake);
  indexer.move(powerIndexer);
 
  pros::delay(time);
@@ -230,14 +202,13 @@ void flywheelAccel(int maxSpeed)
 {
   int speed = 0;
 
-  pros::Motor flyWheel(10, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
 
   for(int i = 1; i <= maxSpeed; i++)
   {
     speed++;
   }
 
-  flyWheel.move(speed);
+  flyWheel_mtr.move(speed);
 }
 /* static void sonarReset(int power)
 {
@@ -361,7 +332,57 @@ void blueAuton()
 
 void redAuton()
 {
+  flyCoast();
 
+  //gets back cap
+
+  flywheelAccel(127);
+
+  moveDrive(30, 87, 127, 0, 0);
+
+  moveDrive(10, 90, 127, 0, 0);
+
+  miscell(70, 0, 400);
+
+  moveDrive(40, -87, 127, 0, 0);
+
+  driveMotors(-57, -57);
+
+  stop(500);
+
+  moveDrive(7, 67, 127, 0, 0);
+
+  stop(150);
+
+  driveTurn(-86, -60);
+
+  stop(150);
+
+  moveDrive(48, 97, 127, 0, 0);
+
+  stop(150);
+
+  miscell(0, 80, 700);
+
+  moveDrive(30, 87, 127, 0, 0);
+
+  stop(150);
+
+  miscell(120, 120, 1000);
+
+  moveDrive(30, 87, 127, 0, 0);
+
+  driveTurn(-15, -67);
+
+  moveDrive(12, 67, 127, 0, 0);
+
+  moveDrive(70, -87, 127, 0, 0);
+
+  driveTurn(-87, 67);
+
+  stop(150);
+
+  moveDrive(28, 127, 0, 0, 0);
 }
 
 void autonomous()
@@ -376,7 +397,5 @@ void autonomous()
   else if(auton == 2)
   {
   }*/
-  //skillsAuton();
-
-  moveDrive(30, 90, 0, 0, 0);
+  redAuton();
 }

@@ -18,30 +18,30 @@
  */
 
 void opcontrol() {
-	pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_ROTATIONS);
 
-	pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
-	pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_ROTATIONS);
+	pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+	pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+
+	pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
 
 	pros::ADIUltrasonic leftSensor('A', 'B');
 	pros::ADIUltrasonic rightSensor('C', 'D');
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-	pros::lcd::set_text(4, "MOTOR SPEED=" + std::to_string(leftFDrive_mtr.get_position()));
 
 	int speed = 0;
 
 	while (true) {
 
-		leftBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X));
-		leftFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X));
-		rightFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X));
-		rightBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X));
+		leftBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X)*3/4);
+		leftFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X)*3/4);
+		rightFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X)*3/4);
+		rightBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X)*3/4);
 
 		flyWheel_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
@@ -73,13 +73,20 @@ void opcontrol() {
 		{
 			indexer.move(100);
 		}
+		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B))
+		{
+			indexer.move(-100);
+		}
 		else
 		{
 			indexer.move(0);
 			ballIntake_mtr.move(0);
 		}
 
-
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X))
+		{
+			autonomous();
+		}
     pros::delay(20);
 	}
 }
