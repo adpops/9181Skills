@@ -126,7 +126,7 @@ static void driveTurn(int degrees, int power)
 {
 
  resetPos();
- degrees*=3.107;
+ degrees*=3.0;
 
  leftFDrive_mtr.move_relative(degrees, power);
  leftBDrive_mtr.move_relative(degrees, power);

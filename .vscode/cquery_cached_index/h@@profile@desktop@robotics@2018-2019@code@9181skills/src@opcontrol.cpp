@@ -1,7 +1,18 @@
 #include "main.h"
 
+pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
 
+pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
 
+pros::ADIUltrasonic leftSensor('A', 'B');
+pros::ADIUltrasonic rightSensor('C', 'D');
+pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -18,21 +29,6 @@
  */
 
 void opcontrol() {
-
-	pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-	pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-
-	pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-
-	pros::ADIUltrasonic leftSensor('A', 'B');
-	pros::ADIUltrasonic rightSensor('C', 'D');
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-
 
 	int speed = 0;
 
