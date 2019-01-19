@@ -365,15 +365,15 @@ void redAuto()
 
   flywheelAccel(127);
 
-  moveDrive(35, 87, 0, 0);
+  moveDrive(32, 87, 0, 0);
 
   moveDrive(10, 90, 0, 0);
   miscell(70, 0, 350);
   stop(150);
   moveDrive(10, -60, 0, 0);
 
-  driveTurn(-84, 80);
-  flywheelAccel(102);
+  driveTurn(-82, 80);
+  flywheelAccel(107);
   stop(1000);
   miscell(0, 100, 500);
 
@@ -382,13 +382,13 @@ void redAuto()
   miscell(65, 120, 1000);
   stop(200);
 
-  driveTurn(-135, 80);
+  driveTurn(135, 80);
   moveDrive(25, 85, 0, -120);
   miscell(-80, 0, 350);
-  moveDrive(13, -80, 0, 0);
+  moveDrive(10, -80, 0, 0);
   driveTurn(40, 80);
 
-  moveDrive(42, -127, 0, 0);
+  moveDrive(49, -127, 0, 0);
 }
 
 void autonomous()
@@ -403,5 +403,5 @@ void autonomous()
   else if(auton == 2)
   {
   }*/
-  blueAuto();
+  redAuto();
 }
