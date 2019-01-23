@@ -351,7 +351,7 @@ void blueAuto()
     driveTurn(-135, 80);
     moveDrive(25, 85, 0, -120);
     miscell(-80, 0, 350);
-    moveDrive(13, -80, 0, 0);
+    moveDrive(12, -80, 0, 0);
     driveTurn(-40, 80);
 
     moveDrive(42, -127, 0, 0);
@@ -385,7 +385,7 @@ void redAuto()
   driveTurn(135, 80);
   moveDrive(25, 85, 0, -120);
   miscell(-80, 0, 350);
-  moveDrive(10, -80, 0, 0);
+  moveDrive(12, -80, 0, 0);
   driveTurn(40, 80);
 
   moveDrive(49, -127, 0, 0);
@@ -403,5 +403,5 @@ void autonomous()
   else if(auton == 2)
   {
   }*/
-  redAuto();
+  blueAuto();
 }
