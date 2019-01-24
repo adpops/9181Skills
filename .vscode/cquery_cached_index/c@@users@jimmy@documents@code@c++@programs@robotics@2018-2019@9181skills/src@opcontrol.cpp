@@ -1,91 +1,90 @@
 #include "main.h"
 
 /**
- * Runs the operator control code. This function will be started in its own task
+ * Runs the operator control code-> This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
+ * control mode->
  *
  * If no competition control is connected, this function will run immediately
- * following initialize().
+ * following initialize()->
  *
  * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
+ * operator control task will be stopped-> Re-enabling the robot will restart the
+ * task, not resume it from where it left off->
  */
 
 void opcontrol() {
 
 	int speed = 0;
 
-	pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-	pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+	static pros::Controller * controllerMain = new pros::Controller(CONTROLLER_MAIN);
 
-	pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-	pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+	static pros::Motor * backLeftDrive = new pros::Motor(11, GEARSET_200, FWD, ENCODER_DEGREES);
+	static pros::Motor * frontLeftDrive = new pros::Motor(12, GEARSET_200, FWD, ENCODER_DEGREES);
+	static pros::Motor * intakeMotor = new pros::Motor(13, GEARSET_200, REV, ENCODER_DEGREES);
+	static pros::Motor * frontLauncherMotor = new pros::Motor(14, GEARSET_200, REV, ENCODER_DEGREES);
+	static pros::Motor * backLauncherMotor = new pros::Motor(15, GEARSET_200, FWD, ENCODER_DEGREES);
 
-	leftBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-	rightBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-	leftFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-	rightFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	static pros::Motor * indexer = new pros::Motor(18, GEARSET_200, FWD, ENCODER_DEGREES);
+	static pros::Motor * frontRightDrive = new pros::Motor(19, GEARSET_200, REV, ENCODER_DEGREES);
+	static pros::Motor * backRightDrive = new pros::Motor(20, GEARSET_200, REV, ENCODER_DEGREES);
 
-	pros::ADIUltrasonic leftSensor('A', 'B');
-	pros::ADIUltrasonic rightSensor('C', 'D');
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
+	backLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	frontLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	frontRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+	backRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+
 
 
 	while (true) {
 
-		leftBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X)*3/4);
-		leftFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) + master.get_analog(ANALOG_LEFT_X)*3/4);
-		rightFDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X)*3/4);
-		rightBDrive_mtr.move(master.get_analog(ANALOG_LEFT_Y) - master.get_analog(ANALOG_LEFT_X)*3/4);
+		backLeftDrive->move(controllerMain->get_analog(ANALOG_LEFT_Y) + controllerMain->get_analog(ANALOG_LEFT_X)*3/4);
+		frontLeftDrive->move(controllerMain->get_analog(ANALOG_LEFT_Y) + controllerMain->get_analog(ANALOG_LEFT_X)*3/4);
+		frontRightDrive->move(controllerMain->get_analog(ANALOG_LEFT_Y) - controllerMain->get_analog(ANALOG_LEFT_X)*3/4);
+		backRightDrive->move(controllerMain->get_analog(ANALOG_LEFT_Y) - controllerMain->get_analog(ANALOG_LEFT_X)*3/4);
 
-		flyWheel_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+		frontLauncherMotor->set_brake_mode(BRAKE_COAST);
+		backLauncherMotor->set_brake_mode(BRAKE_COAST);
 
-		capScorer.move(master.get_analog(ANALOG_RIGHT_Y));
-
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1))
+		if(controllerMain->get_digital(BUTTON_L1))
 		{
       for(int i = 1; i <= 127; i++)
 			{
 				speed++;
 			}
 		}
-		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
+		else if(controllerMain->get_digital(BUTTON_L2))
 		{
 			speed = 0;
 		}
 
-		flyWheel_mtr.move(speed);
+		frontLauncherMotor->move(speed);
+		backLauncherMotor->move(speed);
 
-    if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
+    if(controllerMain->get_digital(BUTTON_R1))
 		{
-			ballIntake_mtr.move(100);
+			intakeMotor->move(100);
 		}
-		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
+		else if(controllerMain->get_digital(BUTTON_R2))
 		{
-			ballIntake_mtr.move(-100);
+			intakeMotor->move(-100);
 		}
-		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A))
+		else if(controllerMain->get_digital(BUTTON_A))
 		{
-			indexer.move(100);
+			indexer->move(100);
 		}
-		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B))
+		else if(controllerMain->get_digital(BUTTON_B))
 		{
-			indexer.move(-100);
+			indexer->move(-100);
 		}
 		else
 		{
-			indexer.move(0);
-			ballIntake_mtr.move(0);
+			indexer->move(0);
+			intakeMotor->move(0);
 		}
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_X))
+		if(controllerMain->get_digital(BUTTON_X))
 		{
 			autonomous();
 		}

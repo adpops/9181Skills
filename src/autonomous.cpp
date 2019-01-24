@@ -1,79 +1,78 @@
 #include <math.h>
 #include "main.h"
 
-pros::Motor leftBDrive_mtr(2, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-pros::Motor rightBDrive_mtr(4, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
-pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-pros::Motor rightFDrive_mtr(3, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+static pros::Controller * controllerMain = new pros::Controller(CONTROLLER_MAIN);
 
-pros::Motor flyWheel_mtr(5, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-pros::Motor ballIntake_mtr(7, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-pros::Motor indexer(6, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
-pros::Motor capScorer(8, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+static pros::Motor * backLeftDrive = new pros::Motor(11, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * frontLeftDrive = new pros::Motor(12, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * intakeMotor = new pros::Motor(13, GEARSET_200, REV, ENCODER_DEGREES);
+static pros::Motor * frontLauncherMotor = new pros::Motor(14, GEARSET_200, REV, ENCODER_DEGREES);
+static pros::Motor * backLauncherMotor = new pros::Motor(15, GEARSET_200, FWD, ENCODER_DEGREES);
+
+static pros::Motor * indexer = new pros::Motor(18, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * frontRightDrive = new pros::Motor(19, GEARSET_200, REV, ENCODER_DEGREES);
+static pros::Motor * backRightDrive = new pros::Motor(20, GEARSET_200, REV, ENCODER_DEGREES);
+
+int autoCounter = 0;
 
 /**
-* Runs the user autonomous code. This function will be started in its own task
+* Runs the user autonomous code-> This function will be started in its own task
 * with the default priority and stack size whenever the robot is enabled via
 * the Field Management System or the VEX Competition Switch in the autonomous
-* mode. Alternatively, this function may be called in initialize or opcontrol
-* for non-competition testing purposes.
+* mode-> Alternatively, this function may be called in initialize or opcontrol
+* for non-competition testing purposes->
 *
 * If the robot is disabled or communications is lost, the autonomous task
-* will be stopped. Re-enabling the robot will restart the task, not re-start it
-* from where it left off.
+* will be stopped-> Re-enabling the robot will restart the task, not re-start it
+* from where it left off->
 */
 
 static void driveMotors(int powerLeft, int powerRight)
 {
-
- leftFDrive_mtr.move(powerLeft);
- leftBDrive_mtr.move(powerLeft);
- rightBDrive_mtr.move(powerRight);
- rightFDrive_mtr.move(powerRight);
+ frontLeftDrive->move(powerLeft);
+ backLeftDrive->move(powerLeft);
+ backRightDrive->move(powerRight);
+ frontRightDrive->move(powerRight);
 }
 
 static void resetPos()
 {
-  leftBDrive_mtr.tare_position();
-  rightBDrive_mtr.tare_position();
-  rightFDrive_mtr.tare_position();
-  leftFDrive_mtr.tare_position();
+  backLeftDrive->tare_position();
+  backRightDrive->tare_position();
+  frontRightDrive->tare_position();
+  frontLeftDrive->tare_position();
 }
 
 static void resetSensor(int target)
 {
-
-
- leftFDrive_mtr.set_zero_position(target);
- rightBDrive_mtr.set_zero_position(target);
- leftBDrive_mtr.set_zero_position(target);
- rightFDrive_mtr.set_zero_position(target);
+ frontLeftDrive->set_zero_position(target);
+ backRightDrive->set_zero_position(target);
+ backLeftDrive->set_zero_position(target);
+ frontRightDrive->set_zero_position(target);
 }
 
 static void driveBrakeHold()
 {
 
 
- leftFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- leftBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- rightFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- rightBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ frontLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ backLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ frontRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ backRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
 static void resetBrake()
 {
-
-
- leftFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- leftBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- rightFDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
- rightBDrive_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ frontLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ backLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ frontRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+ backRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
 static void movePID(int power)
 {
 
-  double kp = 1; //0.6485
+  double kp = 1; //0->6485
 
   int main = 0;
   int secondary = 0;
@@ -82,9 +81,9 @@ static void movePID(int power)
 
   int maxPower = power;
   int MIN_POWER = maxPower - 1;
-  //int leftPos = (abs(lfdMotor.get_position()) + abs(lbdMotor.get_Position())/2;
-  main = (abs(rightFDrive_mtr.get_position()) >= abs(leftFDrive_mtr.get_position())) ? abs(rightFDrive_mtr.get_position()) : abs(leftFDrive_mtr.get_position());
-  secondary = (abs(rightFDrive_mtr.get_position()) >= abs(leftFDrive_mtr.get_position())) ? abs(leftFDrive_mtr.get_position()) : abs(rightFDrive_mtr.get_position());
+  //int leftPos = (abs(lfdMotor->get_position()) + abs(lbdMotor->get_Position())/2;
+  main = (abs(frontRightDrive->get_position()) >= abs(frontLeftDrive->get_position())) ? abs(frontRightDrive->get_position()) : abs(frontLeftDrive->get_position());
+  secondary = (abs(frontRightDrive->get_position()) >= abs(frontLeftDrive->get_position())) ? abs(frontLeftDrive->get_position()) : abs(frontRightDrive->get_position());
 
   error = main - secondary;
 
@@ -108,7 +107,7 @@ static void movePID(int power)
    }
   }
 
-  if(rightFDrive_mtr.get_position() > leftFDrive_mtr.get_position())
+  if(frontRightDrive->get_position() > frontLeftDrive->get_position())
   {
    powerLeft = maxPower;
    powerRight = power;
@@ -128,13 +127,13 @@ static void driveTurn(int degrees, int power)
  resetPos();
  degrees*=3.0;
 
- leftFDrive_mtr.move_relative(degrees, power);
- leftBDrive_mtr.move_relative(degrees, power);
- rightBDrive_mtr.move_relative(-degrees, -power);
- rightFDrive_mtr.move_relative(-degrees, -power);
+ frontLeftDrive->move_relative(degrees, power);
+ backLeftDrive->move_relative(degrees, power);
+ backRightDrive->move_relative(-degrees, -power);
+ frontRightDrive->move_relative(-degrees, -power);
 
- while (!((leftFDrive_mtr.get_position() < (degrees + 5)) && (leftFDrive_mtr.get_position() > (degrees - 5)))
-        && !((rightFDrive_mtr.get_position() < (-degrees + 5)) && (rightFDrive_mtr.get_position() > (-degrees - 5))))
+ while (!((frontLeftDrive->get_position() < (degrees + 5)) && (frontLeftDrive->get_position() > (degrees - 5)))
+        && !((frontRightDrive->get_position() < (-degrees + 5)) && (frontRightDrive->get_position() > (-degrees - 5))))
  {
   pros::delay(2);
  }
@@ -144,10 +143,11 @@ static void driveTurn(int degrees, int power)
 static void flyCoast()
 {
 
- flyWheel_mtr.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+ frontLauncherMotor->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+ backLauncherMotor->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
-void moveDrive(double targetDistance, int maxPower, int indexerP, int intakeP)
+void moveDrive(double targetDistance, int maxPower, int flywheelP, int indexerP, int intakeP)
 {
  int currentDistance = 0;
  double error = 20;
@@ -161,15 +161,17 @@ void moveDrive(double targetDistance, int maxPower, int indexerP, int intakeP)
 
 while(error != 0)
 {
-   leftF = abs(leftFDrive_mtr.get_position());
-   rightF = abs(rightFDrive_mtr.get_position());
+   leftF = abs(frontLeftDrive->get_position());
+   rightF = abs(frontRightDrive->get_position());
 
    currentDistance = (leftF + rightF)/2;
 
    error = targ - currentDistance;
 
-   ballIntake_mtr.move(intakeP);
-   indexer.move(indexerP);
+   frontLauncherMotor->move(flywheelP);
+   backLauncherMotor->move(flywheelP);
+   intakeMotor->move(intakeP);
+   indexer->move(indexerP);
 
    driveMotors(maxPower, maxPower);
    //movePID(maxPower);
@@ -184,14 +186,14 @@ while(error != 0)
  }
  resetBrake();
 
- ballIntake_mtr.move(0);
+ intakeMotor->move(0);
 }
 
 void miscell(int powerIntake, int powerIndexer, int time)
 {
 
- ballIntake_mtr.move(powerIntake);
- indexer.move(powerIndexer);
+ intakeMotor->move(powerIntake);
+ indexer->move(powerIndexer);
 
  pros::delay(time);
 }
@@ -206,27 +208,27 @@ void flywheelAccel(int maxSpeed)
     speed++;
   }
 
-  flyWheel_mtr.move(speed);
+  frontLauncherMotor->move(speed);
 }
 /* static void sonarReset(int power)
 {
- pros::Motor leftBDrive_mtr(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightBDrive_mtr(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
- pros::Motor leftFDrive_mtr(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
- pros::Motor rightFDrive_mtr(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+ pros::Motor backLeftDrive(11, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+ pros::Motor backRightDrive(12, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
+ pros::Motor frontLeftDrive(1, MOTOR_GEARSET_18, false, MOTOR_ENCODER_DEGREES);
+ pros::Motor frontRightDrive(2, MOTOR_GEARSET_18, true, MOTOR_ENCODER_DEGREES);
  pros::ADIUltrasonic leftSensor('A', 'B');
  pros::ADIUltrasonic rightSensor('C', 'D');
- if(leftSensor.get_value() > rightSensor.get_value())
+ if(leftSensor->get_value() > rightSensor->get_value())
  {
-   while(leftSensor.get_value() > rightSensor.get_value())
+   while(leftSensor->get_value() > rightSensor->get_value())
    {
        turnPID(-power);
    }
    driveBrakeHold();
  }
- else if(leftSensor.get_value() < rightSensor.get_value())
+ else if(leftSensor->get_value() < rightSensor->get_value())
  {
-   while(leftSensor.get_value() < rightSensor.get_value())
+   while(leftSensor->get_value() < rightSensor->get_value())
    {
        turnPID(power);
    }
@@ -250,19 +252,19 @@ void skillsAuton()
 
   flywheelAccel(127);
 
-  moveDrive(30, 87, 0, 0);
+  moveDrive(30, 87, 127, 0, 0);
 
-  moveDrive(10, 90,0, -40);
+  moveDrive(10, 90, 127, 0, -40);
 
   miscell(70, 0, 700);
 
-  moveDrive(40, -87, 0, 0);
+  moveDrive(40, -87, 127, 0, 0);
 
   driveMotors(-57, -57);
 
   stop(500);
 
-  moveDrive(7, 67, 0, 0);
+  moveDrive(7, 67, 127, 0, 0);
 
   stop(150);
 
@@ -270,31 +272,31 @@ void skillsAuton()
 
   stop(150);
 
-  moveDrive(40, 97,0, 0);
+  moveDrive(40, 97, 127, 0, 0);
 
   stop(150);
 
   miscell(0, 80, 1000);
 
-  moveDrive(25, 87, 0, 0);
+  moveDrive(25, 87, 127, 0, 0);
 
   stop(150);
 
   miscell(75, 80, 1000);
 
-  moveDrive(10, 87, 0, 0);
+  moveDrive(10, 87, 127, 0, 0);
 
   driveTurn(-15, -67);
 
-  moveDrive(12, 67, 0, 0);
+  moveDrive(12, 67, 127, 0, 0);
 
-  moveDrive(15, -87, 0, 0);
+  moveDrive(15, -87, 127, 0, 0);
 
   driveTurn(15, 67);
 
   stop(150);
 
-  moveDrive(28, -87, 0, 0);
+  moveDrive(28, -87, 127, 0, 0);
 
   //gets front cap
 
@@ -308,7 +310,7 @@ void skillsAuton()
 
   stop(150);
 
-  moveDrive(44, 97, 0, -50);
+  moveDrive(44, 97, 127, 0, -50);
 
   miscell(60, 0, 750);
 
@@ -320,41 +322,41 @@ void skillsAuton()
 
   driveTurn(-5, -67);
 
-  moveDrive(46, 87, 0, 0);
+  moveDrive(46, 87, 127, 0, 0);
 }
 
 void blueAuto()
 {
-    flyCoast();
+  flyCoast();
 
-    //gets back cap
+  //gets back cap
 
-    flywheelAccel(127);
+  flywheelAccel(127);
 
-    moveDrive(35, 87, 0, 0);
+  moveDrive(35, 87, 127, 0, 0);
 
-    moveDrive(10, 90, 0, 0);
-    miscell(70, 0, 350);
-    stop(150);
-    moveDrive(10, -60, 0, 0);
+  moveDrive(10, 90, 127, 0, 0);
+  miscell(70, 0, 350);
+  stop(150);
+  moveDrive(10, -60, 127, 0, 0);
 
-    driveTurn(84, 80);
-    flywheelAccel(102);
-    stop(1000);
-    miscell(0, 100, 500);
+  driveTurn(84, 80);
+  flywheelAccel(102);
+  stop(1000);
+  miscell(0, 100, 500);
 
-    flywheelAccel(93);
-    stop(1500);
-    miscell(65, 120, 1000);
-    stop(200);
+  flywheelAccel(93);
+  stop(1500);
+  miscell(65, 120, 1000);
+  stop(200);
 
-    driveTurn(-135, 80);
-    moveDrive(25, 85, 0, -120);
-    miscell(-80, 0, 350);
-    moveDrive(12, -80, 0, 0);
-    driveTurn(-40, 80);
+  driveTurn(-135, 80);
+  moveDrive(25, 85, 127, 0, -120);
+  miscell(-80, 0, 350);
+  moveDrive(12, -80, 127, 0, 0);
+  driveTurn(-40, 80);
 
-    moveDrive(42, -127, 0, 0);
+  moveDrive(42, -127, 127, 0, 0);
 }
 
 void redAuto()
@@ -365,12 +367,12 @@ void redAuto()
 
   flywheelAccel(127);
 
-  moveDrive(32, 87, 0, 0);
+  moveDrive(32, 87, 127, 0, 0);
 
-  moveDrive(10, 90, 0, 0);
+  moveDrive(10, 90, 127, 0, 0);
   miscell(70, 0, 350);
   stop(150);
-  moveDrive(10, -60, 0, 0);
+  moveDrive(10, -60, 127, 0, 0);
 
   driveTurn(-82, 80);
   flywheelAccel(107);
@@ -383,25 +385,27 @@ void redAuto()
   stop(200);
 
   driveTurn(135, 80);
-  moveDrive(25, 85, 0, -120);
+  moveDrive(25, 85, 127, 0, -120);
   miscell(-80, 0, 350);
-  moveDrive(12, -80, 0, 0);
+  moveDrive(12, -80, 127, 0, 0);
   driveTurn(40, 80);
 
-  moveDrive(49, -127, 0, 0);
+  moveDrive(49, -127, 127, 0, 0);
 }
 
 void autonomous()
 {
-  /*
-  if(auton == 0)
+  autoCounter = (autoCounter < -1) ? -1 : autoCounter;
+  autoCounter = (autoCounter > 1) ? 1 : autoCounter;
+
+  switch(autoCounter)
   {
+    case -1:
+      redAuto();
+      break;
+    case 1:
+      blueAuto();
+      break;
   }
-  else if(auton == 1)
-  {
-  }
-  else if(auton == 2)
-  {
-  }*/
   blueAuto();
 }

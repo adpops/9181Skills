@@ -1,13 +1,36 @@
 #include "main.h"
 
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+void checkAutoSelected()
+{
+  std::string selectedAuto = "";
+  switch(autoCounter)
+  {
+    case -1:
+      selectedAuto = "RED LEFT";
+      break;
+    case 1:
+      selectedAuto = "BLUE RIGHT";
+      break;
+    default:
+      selectedAuto = "NONE";
+      break;
+  }
+
+  pros::lcd::set_text(3, "Current Selection: " + selectedAuto);
+  pros::lcd::set_text(5, "The Current Number is: " + std::to_string(autoCounter));
+}
+
+void on_left_button()
+{
+  autoCounter--;
+
+  checkAutoSelected();
+}
+
+void on_right_button()
+{
+  autoCounter++;
+  checkAutoSelected();
 }
 
 /**
@@ -18,9 +41,9 @@ void on_center_button() {
  */
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn0_cb(on_left_button);
+	pros::lcd::register_btn2_cb(on_right_button);
 }
 
 /**
