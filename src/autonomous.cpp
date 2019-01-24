@@ -3,15 +3,15 @@
 
 static pros::Controller * controllerMain = new pros::Controller(CONTROLLER_MAIN);
 
-static pros::Motor * backLeftDrive = new pros::Motor(11, GEARSET_200, FWD, ENCODER_DEGREES);
-static pros::Motor * frontLeftDrive = new pros::Motor(12, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * backLeftDrive = new pros::Motor(9, GEARSET_200, REV, ENCODER_DEGREES);
+static pros::Motor * frontLeftDrive = new pros::Motor(12, GEARSET_200, REV, ENCODER_DEGREES);
 static pros::Motor * intakeMotor = new pros::Motor(13, GEARSET_200, REV, ENCODER_DEGREES);
 static pros::Motor * frontLauncherMotor = new pros::Motor(14, GEARSET_200, REV, ENCODER_DEGREES);
 static pros::Motor * backLauncherMotor = new pros::Motor(15, GEARSET_200, FWD, ENCODER_DEGREES);
 
-static pros::Motor * indexer = new pros::Motor(18, GEARSET_200, FWD, ENCODER_DEGREES);
-static pros::Motor * frontRightDrive = new pros::Motor(19, GEARSET_200, REV, ENCODER_DEGREES);
-static pros::Motor * backRightDrive = new pros::Motor(20, GEARSET_200, REV, ENCODER_DEGREES);
+static pros::Motor * liftMotor = new pros::Motor(18, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * frontRightDrive = new pros::Motor(19, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * backRightDrive = new pros::Motor(20, GEARSET_200, FWD, ENCODER_DEGREES);
 
 int autoCounter = 0;
 
@@ -171,7 +171,7 @@ while(error != 0)
    frontLauncherMotor->move(flywheelP);
    backLauncherMotor->move(flywheelP);
    intakeMotor->move(intakeP);
-   indexer->move(indexerP);
+   //indexer->move(indexerP);
 
    driveMotors(maxPower, maxPower);
    //movePID(maxPower);
@@ -193,7 +193,7 @@ void miscell(int powerIntake, int powerIndexer, int time)
 {
 
  intakeMotor->move(powerIntake);
- indexer->move(powerIndexer);
+ //indexer->move(powerIndexer);
 
  pros::delay(time);
 }
@@ -407,5 +407,4 @@ void autonomous()
       blueAuto();
       break;
   }
-  blueAuto();
 }
