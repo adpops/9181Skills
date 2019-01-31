@@ -53,8 +53,6 @@ static void resetSensor(int target)
 
 static void driveBrakeHold()
 {
-
-
  frontLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
  backLeftDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
  frontRightDrive->set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
@@ -159,35 +157,35 @@ void moveDrive(double targetDistance, int maxPower, int flywheelP, int indexerP,
  resetPos();
 
 
-while(error != 0)
-{
-   leftF = abs(frontLeftDrive->get_position());
-   rightF = abs(frontRightDrive->get_position());
+  while(error != 0)
+  {
+     leftF = abs(frontLeftDrive->get_position());
+     rightF = abs(frontRightDrive->get_position());
 
-   currentDistance = (leftF + rightF)/2;
+     currentDistance = (leftF + rightF)/2;
 
-   error = targ - currentDistance;
+     error = targ - currentDistance;
 
-   frontLauncherMotor->move(flywheelP);
-   backLauncherMotor->move(flywheelP);
-   intakeMotor->move(intakeP);
-   //indexer->move(indexerP);
+     frontLauncherMotor->move(flywheelP);
+     backLauncherMotor->move(flywheelP);
+     intakeMotor->move(intakeP);
+     //indexer->move(indexerP);
 
-   driveMotors(maxPower, maxPower);
-   //movePID(maxPower);
+     driveMotors(maxPower, maxPower);
+     //movePID(maxPower);
 
-   if(error < 15 && error > -15)
-   {
-     error = 0;
-     driveMotors(0, 0);
-     driveBrakeHold();
-     flyCoast();
+     if(error < 15 && error > -15)
+     {
+       error = 0;
+       driveMotors(0, 0);
+       driveBrakeHold();
+       flyCoast();
+     }
    }
- }
- resetBrake();
+   resetBrake();
 
- intakeMotor->move(0);
-}
+   intakeMotor->move(0);
+  }
 
 void miscell(int powerIntake, int powerIndexer, int time)
 {
