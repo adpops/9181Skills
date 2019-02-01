@@ -9,7 +9,7 @@ static pros::Motor * intakeMotor = new pros::Motor(13, GEARSET_200, REV, ENCODER
 static pros::Motor * frontLauncherMotor = new pros::Motor(14, GEARSET_200, REV, ENCODER_DEGREES);
 static pros::Motor * backLauncherMotor = new pros::Motor(15, GEARSET_200, FWD, ENCODER_DEGREES);
 
-static pros::Motor * liftMotor = new pros::Motor(18, GEARSET_200, FWD, ENCODER_DEGREES);
+static pros::Motor * liftMotor = new pros::Motor(18, GEARSET_200, REV, ENCODER_DEGREES);
 static pros::Motor * frontRightDrive = new pros::Motor(19, GEARSET_200, FWD, ENCODER_DEGREES);
 static pros::Motor * backRightDrive = new pros::Motor(20, GEARSET_200, FWD, ENCODER_DEGREES);
 
@@ -123,12 +123,12 @@ static void driveTurn(int degrees, int power)
 {
 
  resetPos();
- degrees*=3.0;
+ degrees*=3.2;
 
- frontLeftDrive->move_relative(degrees, power);
- backLeftDrive->move_relative(degrees, power);
- backRightDrive->move_relative(-degrees, -power);
- frontRightDrive->move_relative(-degrees, -power);
+ frontLeftDrive->move_relative(-degrees, -power);
+ backLeftDrive->move_relative(-degrees, -power);
+ backRightDrive->move_relative(degrees, power);
+ frontRightDrive->move_relative(degrees, power);
 
  while (!((frontLeftDrive->get_position() < (degrees + 5)) && (frontLeftDrive->get_position() > (degrees - 5)))
         && !((frontRightDrive->get_position() < (-degrees + 5)) && (frontRightDrive->get_position() > (-degrees - 5))))
@@ -362,7 +362,6 @@ void redAuto()
   flyCoast();
 
   //gets back cap
-
   flywheelAccel(127);
 
   moveDrive(32, 87, 127, 0, 0);
